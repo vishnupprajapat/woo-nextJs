@@ -2,10 +2,8 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import WooCommerceRestApi from "@woocommerce/woocommerce-rest-api";
 import { headers } from "next/headers";
-headers
-
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
+  apiVersion: "2022-11-15",
 });
 // const webhookSecret = process.env.STRIPE_WEBHOOK_ENDPOINT_SECRET;
 
@@ -33,36 +31,37 @@ const updateOrder = async (newStatus, orderId, transactionId = "") => {
     throw ex;
   }
 };
+export async function POST (request){
+    const body = await request.text();
+    const signature = headers().get("stripe-signature"); 
 
+    let event 
 
-export async function POST(req) {
-    try {
-        const body = await req.text();
-        const headerList = headers();
-        const sig = headerList.get("stripe-signature");
-        if(!process.env.STRIPE_WEBHOOK_SECRET) {
-            console.error("❌ Webhook secret not set");
-            return NextResponse.json({ error: "Webhook secret not set" }, { status: 500 });
-        }
-        const event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-        if(event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
-            const session = event.data.object;
-            console.log("✅ Payment Successful - Order ID:", session.metadata.orderId);
-            try {
-                await updateOrder("processing", session.metadata.orderId, session.id);
-            } catch (error) {
-                await updateOrder("failed", session.metadata.orderId);
-                console.error("❌ Order Update Failed:", error);
-            }
-        }
-        return NextResponse.json({ received: true }, { status: 200 });
-        
-    } catch (error) {
-        console.error("❌ Webhook error:", error);
-        return NextResponse.json({ error: "Webhook error" }, { status: 400 });
-        
+    try{
+        event = stripe.webhooks.constructEvent(
+            body,
+            signature,
+            process.env.STRIPE_WEBHOOK_SECRET
+        )
+    }catch (error) {
+          return new NextResponse("Webhook Error", {
+            status: 400,
+          });
     }
+    const session = event.data.object;
+    if(event.type === "checkout.session.completed"){
+        console.log("Payment Successful - Order ID:", session.metadata.orderId);
+        try {
+          await updateOrder("processing", session.metadata.orderId, session.id);
+        } catch (error) {
+          await updateOrder("failed", session.metadata.orderId);
+          console.error("❌ Order Update Failed:", error);
+        }
+    }
+
 }
+
+
 
 // export async function POST(req) {
 //   const sig = req.headers.get("stripe-signature");
