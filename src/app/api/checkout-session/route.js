@@ -34,17 +34,13 @@ const getMetaData = (input, orderId) => ({
   orderId,
 });
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
-
+export async function POST(req) {
   try {
-    const { products, input, orderId } = req.body;
+    const { products, input, orderId } = await req.json(); // Use `req.json()` instead of `req.body`
 
     const session = await stripe.checkout.sessions.create({
-      success_url: `${req.headers.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&order_id=${orderId}`,
-      cancel_url: req.headers.origin,
+      success_url: `${req.headers.get("origin")}/thank-you?session_id={CHECKOUT_SESSION_ID}&order_id=${orderId}`,
+      cancel_url: req.headers.get("origin"),
       customer_email: input.billingDifferentThanShipping
         ? input?.billing?.email
         : input?.shipping?.email,
@@ -54,9 +50,10 @@ export default async function handler(req, res) {
       mode: "payment",
     });
 
-    res.status(200).json({ id: session.id });
+    return Response.json({ id: session.id });
   } catch (error) {
     console.error("Error creating checkout session:", error);
-    res.status(500).json({ error: error.message });
+    return Response.json({ error: error.message }, { status: 500 });
   }
 }
+

@@ -73,13 +73,13 @@ export const handleStripeCheckout = async (input, products, setRequestError, cle
     const createCustomerOrder = await createTheOrder( orderData, setRequestError,  '' );
     const cartCleared = await clearTheCart( clearCartMutation, createCustomerOrder?.error );
     setIsStripeOrderProcessing(false);
+console.log(cartCleared)
 
-
-    if ( isEmpty( createCustomerOrder?.orderId ) || cartCleared?.error ) {
-        console.log( 'came in' );
-        setRequestError('Clear cart failed')
-    	return null;
-    }
+    // if ( isEmpty( createCustomerOrder?.orderId )) {
+    //     console.log( 'came in',createCustomerOrder?.orderId,cartCleared?.error);
+    //     setRequestError('Clear cart failed')
+    // 	return null;
+    // }
 
     // On success show stripe form.
     setCreatedOrderData(createCustomerOrder)
@@ -93,7 +93,7 @@ const createCheckoutSessionAndRedirect = async (products, input, orderId) => {
       const response = await fetch("/api/checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ products, input, orderId }),
+        body: JSON.stringify({ products, input, orderId }), 
       });
   
       const { id } = await response.json();

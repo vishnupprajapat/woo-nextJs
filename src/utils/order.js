@@ -106,7 +106,7 @@ export const getCreateOrderData = (order, products) => {
  *
  * @returns {Promise<{orderId: null, error: string}>}
  */
-export const createTheOrder = async ( orderData, setOrderFailedError, previousRequestError ) => {
+export const createTheOrder = async (orderData, setOrderFailedError, previousRequestError) => {
     let response = {
         orderId: null,
         total: '',
@@ -114,36 +114,42 @@ export const createTheOrder = async ( orderData, setOrderFailedError, previousRe
         error: ''
     };
 
-    // Don't proceed if previous request has error.
-    if ( previousRequestError ) {
+    // Don't proceed if a previous request has an error.
+    if (previousRequestError) {
         response.error = previousRequestError;
         return response;
     }
 
-    setOrderFailedError( '' );
+    setOrderFailedError('');
 
     try {
-        const request = await fetch( '/api/create-order', {
+        const request = await fetch('/api/create-order', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify( orderData ),
-        } );
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData),
+        });
+
+        if (!request.ok) {
+            throw new Error(`HTTP error! Status: ${request.status}`);
+        }
 
         const result = await request.json();
-        if ( result.error ) {
-            response.error = result.error
-            setOrderFailedError( 'Something went wrong. Order creation failed. Please try again' );
-        }
-        response.orderId = result?.orderId ?? '';
-        response.total = result.total ?? '';
-        response.currency = result.currency ?? '';
 
-    } catch ( error ) {
-        // @TODO to be handled later.
-        console.warn( 'Handle create order error', error?.message );
+        if (result.error) {
+            response.error = result.error;
+            setOrderFailedError('Something went wrong. Order creation failed. Please try again.');
+            return response; // Return early if there's an error
+        }
+
+        response.orderId = result?.orderId ?? '';
+        response.total = result?.total ?? '';
+        response.currency = result?.currency ?? '';
+
+    } catch (error) {
+        console.warn('Handle create order error:', error?.message);
+        response.error = 'An unexpected error occurred. Please try again.';
+        setOrderFailedError(response.error);
     }
 
     return response;
-}
+};
