@@ -1,26 +1,126 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+    width: 100%;
+  }
+  
+  .product img {
+    width: 100%;
+  }
+  
+  .header {
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+  }
+  
+  .banner img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    object-position: 50% 50%;
+  }
+  
+  .banner-img-container {
+    transition: opacity 500ms linear 0s;
+  }
+  
+  .banner-content {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
+  
+  .banner-content__title {
+    line-height: 1.2;
+    max-width: 254px;
+  }
+  
+  .banner-content__description {
+    margin-top: 10px;
+    padding-bottom: 40px;
+  }
+  
+  .banner-content__link {
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+  }
+  
+  .banner-img {
+    position: relative;
+    height: 400px;
+  }
+  
+  .slider-button {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #fff;
+    padding: 10px 20px;
+    font-size: 24px;
+  }
+  
+  .products .product-description {
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .categories,
+  .cart,
+  .checkout {
+    min-height: 400px;
+  }
+  
+  .cart-products th,
+  .cart-products td,
+  .checkout-cart th,
+  .checkout-cart td {
+    padding: 10px 0;
+  }
+  
+  .cart-products tr,
+  .checkout-cart tr {
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .woo-next-cart-total-container {
+    max-height: 200px;
+    height: 100%;
+  }
+  
+  .main-title {
+    position: relative;
+    text-align: center;
+  }
+  
+  .main-title:before,
+  .main-title:after {
+    content: "";
+    position: absolute;
+    bottom: 50%;
+    height: 2px;
+    width: 50%;
+    background: #222;
+    z-index: -1;
+  }
+  
+  .main-title:before {
+    left: 0;
+  }
+  
+  .main-title:after {
+    right: 0;
+  }
+  
+  .main-title-inner {
+    background: #fff;
+    padding: 0 20px;
+  }
+  
+  .woo-next-cart-qty input {
+    border: 1px solid #ccc;
+    text-align: center;
+    border-radius: 4px;
+  }
+  
