@@ -13,6 +13,7 @@
     "@stripe/react-stripe-js": "^3.5.1",
     "@stripe/stripe-js": "^6.1.0",
     "@woocommerce/woocommerce-rest-api": "^1.0.1",
+    "axios": "^1.8.4",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "graphql": "^16.10.0",

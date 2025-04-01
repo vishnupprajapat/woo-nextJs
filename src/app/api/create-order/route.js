@@ -18,7 +18,7 @@ export async function POST(req) {
       return NextResponse.json({ success: false, error: "Required data not sent" }, { status: 400 });
     }
 
-    const orderData = { ...body, status: "pending", set_paid: false };
+    const orderData = { ...body, status: "processing", set_paid: false };
     const { data } = await api.post("orders", orderData);
 
     return NextResponse.json({

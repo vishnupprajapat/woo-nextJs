@@ -3,7 +3,8 @@ import React from 'react'
 
 const Cart = () => {
   return (
-    <div><CartItemsContainer/></div>
+    <div>
+      <CartItemsContainer/></div>
   )
 }
 
