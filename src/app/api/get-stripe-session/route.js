@@ -1,33 +1,21 @@
-import WooCommerceRestApi from "@woocommerce/woocommerce-rest-api";
-import { NextResponse } from "next/server";
-import { isEmpty } from "lodash";
+import Stripe from "stripe";
 
-const api = new WooCommerceRestApi({
-  url: process.env.NEXT_PUBLIC_WORDPRESS_URL,
-  consumerKey: process.env.WC_CONSUMER_KEY,
-  consumerSecret: process.env.WC_CONSUMER_SECRET,
-  version: "wc/v3",
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// Named export for the `POST` method
-export async function POST(req) {
+export async function GET(request) {
   try {
-    const body = await req.json();
+    const { searchParams } = new URL(request.url);
+    const sessionId = searchParams.get("session_id");
 
-    if (isEmpty(body)) {
-      return NextResponse.json({ success: false, error: "Required data not sent" }, { status: 400 });
+    if (!sessionId) {
+      return Response.json({ error: "Session ID is required" }, { status: 400 });
     }
 
-    const orderData = { ...body, status: "pending", set_paid: false };
-    const { data } = await api.post("orders", orderData);
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    return NextResponse.json({
-      success: true,
-      orderId: data.id,
-      total: data.total,
-      currency: data.currency,
-    });
+    return Response.json(session, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error("Error retrieving Stripe session:", error.message);
+    return Response.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
