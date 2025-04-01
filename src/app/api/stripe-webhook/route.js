@@ -10,12 +10,13 @@ export async function POST(req) {
   let event
   try {
     const stripeSignature = (await headers()).get('stripe-signature');
-
+console.log(stripeSignature)
     event = stripe.webhooks.constructEvent(
       await req.text(),
       stripeSignature ,
       process.env.STRIPE_WEBHOOK_SECRET
     );
+    console.log(event)
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
     // On error, log and return the error message.
